@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Entry App</title>
+  <style>
+    body { 
+      font-family: Arial; 
+      background-color: #007BFF; /* your blue color */
+      color: white;
+      padding: 20px;
+    }
+    input, select, button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 18px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: white;
+      color: #007BFF;
+      border: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Data Entry App</h2>
+
+<label for="date">Select Date:</label>
+<input type="date" id="date">
+
+<label for="A">Category A:</label>
+<input type="number" id="A">
+
+<label for="B">Category B:</label>
+<input type="number" id="B">
+
+<label for="C">Category C:</label>
+<input type="number" id="C">
+
+<label for="D">Category D:</label>
+<input type="number" id="D">
+
+<button id="submitBtn">Enter</button>
+
+<script>
+const endpoint = "https://script.google.com/macros/s/AKfycbyHIP8Kjsr0ncpENuKn62GRozfW_vB3jrm05eD2UR6qMkqtilxIU3Igcdq8MopGl9Ys3g/exec"; // paste the Google Apps Script URL here
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const data = {
+    date: document.getElementById('date').value,
+    A: document.getElementById('A').value,
+    B: document.getElementById('B').value,
+    C: document.getElementById('C').value,
+    D: document.getElementById('D').value
+  };
+  
+  if(!data.date) { alert("Please select a date!"); return; }
+  
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+  
+  const result = await response.json();
+  alert("Data submitted!");
+  
+  // clear fields
+  document.getElementById('A').value = "";
+  document.getElementById('B').value = "";
+  document.getElementById('C').value = "";
+  document.getElementById('D').value = "";
+});
+</script>
+
+</body>
+</html>
