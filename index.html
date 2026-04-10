@@ -178,6 +178,21 @@ function goToPage(p){
 }
 goToPage(1);
 
+  document.addEventListener("keydown", function(e) {
+
+  // Don't trigger while typing in inputs
+  const tag = document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+
+  if (e.key === "ArrowRight") {
+    if (currentPage < 3) goToPage(currentPage + 1);
+  }
+
+  if (e.key === "ArrowLeft") {
+    if (currentPage > 1) goToPage(currentPage - 1);
+  }
+});
+
 
 
 /* ---------------- CALIBRATION ---------------- */
@@ -208,19 +223,23 @@ let productData = {};
 const maxRows = 10;
 
 /* -----------------------------
-   LOAD PRODUCT DATA
+   LOAD PRODUCT DATA (SAFE)
 ----------------------------- */
 function loadProductData() {
-  return fetch(endpoint + "?action=getProductData")
+
+  fetch(endpoint + "?action=getProductData")
     .then(r => r.json())
     .then(data => {
       productData = data;
-      console.log("Loaded product data:", productData);
+      console.log("Product data loaded:", productData);
 
-      // Attach AFTER data loads
+      // attach AFTER data is ready
       document.querySelectorAll(".product-row").forEach(row => {
         attachRow(row);
       });
+    })
+    .catch(err => {
+      console.error("Failed to load product data:", err);
     });
 }
 
@@ -228,7 +247,7 @@ loadProductData();
 
 
 /* -----------------------------
-   ATTACH ROW LOGIC
+   CALCULATION LOGIC
 ----------------------------- */
 function attachRow(row) {
 
@@ -237,21 +256,14 @@ function attachRow(row) {
   const quantityBox = row.querySelector(".quantity-display");
 
   function calculate() {
+
     const product = dropdown.value;
-    const rounds = Number(roundsInput.value);
-
-    console.log("Calc triggered:", product, rounds);
-
-    if (!product || !rounds) {
-      quantityBox.value = "";
-      return;
-    }
-
+    const rounds = parseFloat(roundsInput.value) || 0;
     const rate = productData[product];
 
-    console.log("Rate found:", rate);
+    console.log("Calc:", product, rounds, rate);
 
-    if (!rate) {
+    if (!product || !rate || !rounds) {
       quantityBox.value = "";
       return;
     }
@@ -259,15 +271,13 @@ function attachRow(row) {
     quantityBox.value = rounds * rate;
   }
 
-  // Force reliable event binding
   roundsInput.addEventListener("input", calculate);
-  roundsInput.addEventListener("keyup", calculate);
   dropdown.addEventListener("change", calculate);
 }
 
 
 /* -----------------------------
-   ADD NEW ROW
+   ADD ROW
 ----------------------------- */
 document.getElementById("add-product").addEventListener("click", () => {
 
@@ -286,6 +296,7 @@ document.getElementById("add-product").addEventListener("click", () => {
   container.appendChild(clone);
 
   attachRow(clone);
+});
 });
 </script>
 
