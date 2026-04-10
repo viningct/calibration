@@ -1,84 +1,293 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Entry App</title>
-  <style>
-    body { 
-      font-family: Arial; 
-      background-color: #007BFF; /* your blue color */
-      color: white;
-      padding: 20px;
-    }
-    input, select, button {
-      display: block;
-      margin: 10px 0;
-      padding: 10px;
-      font-size: 18px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      background-color: white;
-      color: #007BFF;
-      border: none;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Americule</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  background-color: #0074D9;
+  margin: 0;
+  overflow-x: hidden;
+  color: white;
+}
+
+.page {
+  display: none;
+  width: 100%;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.page.active {
+  display: block;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+button {
+  padding: 12px 25px;
+  margin: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background-color: #0057b7;
+  color: white;
+}
+
+button:hover {
+  background-color: #003f7f;
+}
+
+input {
+  padding: 8px;
+  width: 120px;
+  text-align: center;
+}
+
+label {
+  display: inline-block;
+  width: 25px;
+}
+
+.calibration-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80%;
+}
+
+/* Products */
+#products-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.product-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.product-dropdown {
+  width: 180px;
+}
+
+.rounds-input,
+.quantity-display {
+  width: 80px;
+  text-align: center;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Data Entry App</h2>
+<!-- HOME -->
+<div class="page" id="page1">
+<h1>Americule</h1>
+<div style="text-align:center;">
+<button onclick="goToPage(2)">Calibration</button>
+<button onclick="goToPage(3)">Products Produced</button>
+</div>
+</div>
 
-<label for="date">Select Date:</label>
-<input type="date" id="date">
+<!-- CALIBRATION -->
+<div class="page" id="page2">
+<h1>Calibration</h1>
 
-<label for="A">Category A:</label>
-<input type="number" id="A">
+<div class="calibration-container">
+<input type="date" id="date"><br>
+<input type="number" id="A" placeholder="A"><br>
+<input type="number" id="B" placeholder="B"><br>
+<input type="number" id="C" placeholder="C"><br>
+<input type="number" id="D" placeholder="D"><br>
 
-<label for="B">Category B:</label>
-<input type="number" id="B">
+<button id="enter">Enter</button>
+<button onclick="goToPage(1)">Back</button>
+</div>
+</div>
 
-<label for="C">Category C:</label>
-<input type="number" id="C">
+<!-- PRODUCTS -->
+<div class="page" id="page3">
 
-<label for="D">Category D:</label>
-<input type="number" id="D">
+<h1>Products Produced</h1>
 
-<button id="submitBtn">Enter</button>
+<div id="products-container">
+  <div class="product-row">
+    <select class="product-dropdown">
+      <option value="">--Select Product--</option>
+      <option>1/2 Polyball</option>
+      <option>5/8 Polyball</option>
+      <option>11/16 Polyball</option>
+      <option>3/4 Polyball</option>
+      <option>7/8 Polyball</option>
+      <option>1 Polyball</option>
+      <option>1-1/8 Polyball</option>
+      <option>30mm Polyball</option>
+      <option>1-1/4 Polyball</option>
+      <option>1-3/8 Polyball</option>
+      <option>1-5/8 Polyball</option>
+      <option>2 Polyball</option>
+      <option>Polypan</option>
+      <option>Polycube</option>
+      <option>Stars</option>
+      <option>SC Ball</option>
+      <option>SC Cube</option>
+      <option>Carlson Boot</option>
+    </select>
+
+    <input type="number" class="rounds-input" placeholder="Rounds">
+    <input type="text" class="quantity-display" placeholder="Qty" readonly>
+  </div>
+</div>
+
+<div class="button-row">
+<button id="add-product">+</button>
+</div>
+
+<div class="button-row">
+<button onclick="goToPage(1)">Back Home</button>
+</div>
+
+</div>
 
 <script>
-const endpoint = "https://script.google.com/macros/s/AKfycbyHIP8Kjsr0ncpENuKn62GRozfW_vB3jrm05eD2UR6qMkqtilxIU3Igcdq8MopGl9Ys3g/exec"; // paste the Google Apps Script URL here
 
-document.getElementById('submitBtn').addEventListener('click', async () => {
+/* ---------------- NAV ---------------- */
+let currentPage = 1;
+
+function goToPage(p){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  document.getElementById("page"+p).classList.add("active");
+  currentPage = p;
+}
+goToPage(1);
+
+
+
+/* ---------------- CALIBRATION ---------------- */
+const endpoint = "https://script.google.com/macros/s/AKfycbyHIP8Kjsr0ncpENuKn62GRozfW_vB3jrm05eD2UR6qMkqtilxIU3Igcdq8MopGl9Ys3g/exec";
+
+document.getElementById("enter").addEventListener("click", ()=>{
   const data = {
-    date: document.getElementById('date').value,
-    A: document.getElementById('A').value,
-    B: document.getElementById('B').value,
-    C: document.getElementById('C').value,
-    D: document.getElementById('D').value
+    date: date.value,
+    A: A.value,
+    B: B.value,
+    C: C.value,
+    D: D.value
   };
-  
-  if(!data.date) { alert("Please select a date!"); return; }
-  
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    body: JSON.stringify(data)
+
+  fetch(endpoint,{
+    method:"POST",
+    body:JSON.stringify(data)
+  })
+  .then(r=>r.json())
+  .then(r=>{
+    alert(r.status);
+    date.value=A.value=B.value=C.value=D.value="";
   });
-  
-  const result = await response.json();
-  alert("Data submitted!");
-  
-  // clear fields
-  document.getElementById('date').value = "";
-  document.getElementById('A').value = "";
-  document.getElementById('B').value = "";
-  document.getElementById('C').value = "";
-  document.getElementById('D').value = "";
+});
+
+/* ---------------- PRODUCTS ---------------- */
+let productData = {};
+const maxRows = 10;
+
+/* -----------------------------
+   LOAD PRODUCT DATA
+----------------------------- */
+function loadProductData() {
+  return fetch(endpoint + "?action=getProductData")
+    .then(r => r.json())
+    .then(data => {
+      productData = data;
+      console.log("Loaded product data:", productData);
+
+      // Attach AFTER data loads
+      document.querySelectorAll(".product-row").forEach(row => {
+        attachRow(row);
+      });
+    });
+}
+
+loadProductData();
+
+
+/* -----------------------------
+   ATTACH ROW LOGIC
+----------------------------- */
+function attachRow(row) {
+
+  const dropdown = row.querySelector(".product-dropdown");
+  const roundsInput = row.querySelector(".rounds-input");
+  const quantityBox = row.querySelector(".quantity-display");
+
+  function calculate() {
+    const product = dropdown.value;
+    const rounds = Number(roundsInput.value);
+
+    console.log("Calc triggered:", product, rounds);
+
+    if (!product || !rounds) {
+      quantityBox.value = "";
+      return;
+    }
+
+    const rate = productData[product];
+
+    console.log("Rate found:", rate);
+
+    if (!rate) {
+      quantityBox.value = "";
+      return;
+    }
+
+    quantityBox.value = rounds * rate;
+  }
+
+  // Force reliable event binding
+  roundsInput.addEventListener("input", calculate);
+  roundsInput.addEventListener("keyup", calculate);
+  dropdown.addEventListener("change", calculate);
+}
+
+
+/* -----------------------------
+   ADD NEW ROW
+----------------------------- */
+document.getElementById("add-product").addEventListener("click", () => {
+
+  const container = document.getElementById("products-container");
+  const rows = container.querySelectorAll(".product-row");
+
+  if (rows.length >= maxRows) {
+    alert("Max rows reached");
+    return;
+  }
+
+  const clone = rows[0].cloneNode(true);
+
+  clone.querySelectorAll("input,select").forEach(el => el.value = "");
+
+  container.appendChild(clone);
+
+  attachRow(clone);
 });
 </script>
 
 </body>
-
 </html>
-
